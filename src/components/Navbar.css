@@ -1,0 +1,514 @@
+
+.navbar {
+  background: #FFFFFF;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 2rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-logo:hover {
+  opacity: 0.7;
+}
+
+.logo-text {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu button.nav-link {
+  background: none;
+  border: none;
+  color: #333333;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  position: relative;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+  opacity: 0.9;
+}
+
+.nav-menu button.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #000000;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-menu button.nav-link:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.nav-menu button.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-menu button.nav-link.active {
+  color: #000000;
+  opacity: 1;
+}
+
+.nav-menu button.nav-link.active::after {
+  width: 100%;
+  background: #000000;
+}
+
+/* Botón Panel Vendedor — estilo unificado (desktop derecha + mobile) */
+button.vendor-link {
+  background: linear-gradient(135deg, #111111, #2b2b2b);
+  color: #FFFFFF;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  border: 1.5px solid #000000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+
+button.vendor-link:hover {
+  background: linear-gradient(135deg, #000000, #1b1b1b);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+}
+
+button.vendor-link:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+button.vendor-link .vendor-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.cart-section {
+  position: relative;
+}
+
+.cart-btn {
+  background: none;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+
+.cart-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.cart-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.cart-btn:hover .cart-logo {
+  transform: scale(1.1);
+}
+
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #000000;
+  color: #FFFFFF;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.login-btn, .register-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.75rem;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-btn {
+  background: transparent;
+  color: #000000;
+  border: 1.5px solid #000000;
+}
+
+.login-btn:hover {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.register-btn {
+  background: #000000;
+  color: #FFFFFF;
+  border: 1.5px solid #000000;
+}
+
+.register-btn:hover {
+  background: #333333;
+  border-color: #333333;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.welcome-text {
+  font-size: 0.7rem;
+  color: #666666;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.user-name {
+  font-size: 0.75rem;
+  color: #000000;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.role-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  border: 1px solid;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+}
+
+.role-badge.vendor {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.role-badge.buyer {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.2);
+  color: #000000;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  transition: all 0.3s ease;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+}
+
+.logout-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: #000000;
+}
+
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  background: none;
+  border: 1.5px solid #000000;
+  cursor: pointer;
+  padding: 0.5rem;
+  gap: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu-btn span {
+  width: 16px;
+  height: 2px;
+  background: #000000;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn.active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(4px, 4px);
+}
+
+.mobile-menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -4px);
+}
+
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+}
+
+.mobile-menu.active {
+  display: flex;
+}
+
+.mobile-menu .nav-link {
+  padding: 0.8rem 1rem;
+  color: #000000;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-weight: 800;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "Montserrat Alternates", "Josefin Sans", sans-serif;
+  opacity: 0.9;
+}
+
+.mobile-menu .nav-link:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000000;
+  opacity: 1;
+}
+
+.mobile-menu .vendor-link {
+  background: #000000;
+  color: #FFFFFF;
+  margin-top: 0.5rem;
+  border: none;
+  font-weight: 800;
+}
+
+.mobile-menu .vendor-link:hover {
+  background: #333333;
+  color: #FFFFFF;
+}
+
+.mobile-auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.mobile-auth-buttons .login-btn,
+.mobile-auth-buttons .register-btn {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  padding: 0.6rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0.7rem 1.5rem;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+
+  .auth-buttons {
+    display: none;
+  }
+
+  .user-menu {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .logo-text {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.6rem 1rem;
+  }
+
+  .logo-text {
+    font-size: 1rem;
+  }
+
+  .cart-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cart-logo {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cart-count {
+    width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+    top: -3px;
+    right: -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu button.nav-link,
+  .cart-btn,
+  .login-btn,
+  .register-btn,
+  .logout-btn,
+  .mobile-menu-btn {
+    transition: none;
+  }
+  
+  .nav-menu button.nav-link::after {
+    transition: none;
+  }
+}
+
+.nav-menu button.nav-link:focus-visible,
+.cart-btn:focus-visible,
+.login-btn:focus-visible,
+.register-btn:focus-visible,
+.logout-btn:focus-visible,
+.mobile-menu-btn:focus-visible {
+  outline: 2px solid #000000;
+  outline-offset: 1px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.cart-count.added {
+  animation: pulse 0.3s ease;
+}
