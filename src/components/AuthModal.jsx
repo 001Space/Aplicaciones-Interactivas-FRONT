@@ -1,239 +1,146 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-const AuthModal = ({ isOpen, onClose }) => {
-  const [activeForm, setActiveForm] = useState('login');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { login, register } = useAuth();
+//Centralizamos la URL
+const API_BASE_URL = 'http://localhost:8080/api/auth';
 
-  const [loginForm, setLoginForm] = useState({
-    usuario: '',
-    contrasenia: ''
-  });
+//LOGIN (createAsyncThunk)
+//1. Encapsula la lógica async (fetch) en un lugar
+//2. Nos da automáticamente acciones: pending, fulfilled, rejected
+//3. RejectWithValue permite mandar un mensaje de error controlado al reducer
 
-  const [registerForm, setRegisterForm] = useState({
-    nombre: '',
-    apellido: '',
-    usuario: '',
-    email: '',
-    contrasenia: '',
-    confirmPassword: ''
-  });
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
 
-  if (!isOpen) return null;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+      
+        //Mensaje de error controlado que llega a loginUser.rejected
+        return rejectWithValue(errorData.message || 'Usuario o contraseña incorrectos');
+      }
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    const result = await login(loginForm);
-    if (result.success) {
-      onClose();
-      resetForms();
-    } else {
-      setError(result.error);
+      // Se espera que la API devuelva { user, token }
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      return rejectWithValue('Error de conexión con el servidor');
     }
-    setLoading(false);
-  };
+  }
+);
 
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+//REGISTER (createAsyncThunk)
+//Igual idea que loginUser, pero para /register
 
-    if (registerForm.contrasenia !== registerForm.confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      setLoading(false);
-      return;
+
+export const registerUser = createAsyncThunk(
+  'auth/registerUser',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return rejectWithValue(errorData.message || 'Error al registrarse');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      return rejectWithValue('Error de conexión con el servidor');
     }
+  }
+);
 
-    if (registerForm.contrasenia.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      setLoading(false);
-      return;
-    }
+//createSlice
+//1. Nos evita escribir action types a mano (AUTH_LOGIN_SUCCESS, etc.)
+//2. Nos permite escribir "mutaciones" que en realidad son inmutables gracias a immer
+const authSlice = createSlice({
+  name: 'auth',
+  initialState: {
+    user: null,
+    token: null,
+    loading: false, //Usado para login y register
+    error: null,    //Mensaje de error para mostrar en cualquier componente
+  },
+  reducers: {
+  
+    //Logout centralizado: cualquier componente puede dispatch(logout())
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    },
 
-    const { confirmPassword, ...userData } = registerForm;
-    const result = await register({ ...userData, rol: 'COMPRADOR' });
+    //Cargar sesión desde localStorage cuando arranca la app
     
-    if (result.success) {
-      onClose();
-      resetForms();
-    } else {
-      setError(result.error);
-    }
-    setLoading(false);
-  };
+    loadSession: (state) => {
+      const user = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      if (user && token) {
+        state.user = JSON.parse(user);
+        state.token = token;
+      }
+    },
+  },
+  extraReducers: (builder) => {
+    builder
 
-  const resetForms = () => {
-    setLoginForm({ usuario: '', contrasenia: '' });
-    setRegisterForm({
-      nombre: '', apellido: '', usuario: '', email: '', contrasenia: '', confirmPassword: ''
-    });
-    setError('');
-  };
+      //LOGIN
 
-  const handleClose = () => {
-    resetForms();
-    onClose();
-  };
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative mx-4">
-        <button 
-          onClick={handleClose}
-          className="absolute right-4 top-4 text-2xl text-gray-500 hover:text-gray-700"
-        >
-          &times;
-        </button>
-        
-        <div className={activeForm === 'login' ? 'block' : 'hidden'}>
-          <h2 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
-          <form onSubmit={handleLoginSubmit}>
-            <div className="mb-4">
-              <label htmlFor="loginUsuario" className="block mb-2 font-medium">Usuario:</label>
-              <input
-                type="text"
-                id="loginUsuario"
-                value={loginForm.usuario}
-                onChange={(e) => setLoginForm({...loginForm, usuario: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                placeholder="Tu nombre de usuario"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="loginPassword" className="block mb-2 font-medium">Contraseña:</label>
-              <input
-                type="password"
-                id="loginPassword"
-                value={loginForm.contrasenia}
-                onChange={(e) => setLoginForm({...loginForm, contrasenia: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-accent-primary text-white py-3 rounded font-bold hover:bg-hover-highlight transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Cargando...' : 'Iniciar Sesión'}
-            </button>
-          </form>
-          <p className="text-center mt-4">
-            ¿No tienes cuenta?{' '}
-            <button 
-              onClick={() => setActiveForm('register')}
-              className="text-accent-primary hover:underline"
-            >
-              Regístrate aquí
-            </button>
-          </p>
-        </div>
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
 
-        <div className={activeForm === 'register' ? 'block' : 'hidden'}>
-          <h2 className="text-2xl font-bold text-center mb-6">Registrarse</h2>
-          <form onSubmit={handleRegisterSubmit}>
-            <div className="mb-4">
-              <label htmlFor="registerNombre" className="block mb-2 font-medium">Nombre:</label>
-              <input
-                type="text"
-                id="registerNombre"
-                value={registerForm.nombre}
-                onChange={(e) => setRegisterForm({...registerForm, nombre: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="registerApellido" className="block mb-2 font-medium">Apellido:</label>
-              <input
-                type="text"
-                id="registerApellido"
-                value={registerForm.apellido}
-                onChange={(e) => setRegisterForm({...registerForm, apellido: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="registerUsuario" className="block mb-2 font-medium">Usuario:</label>
-              <input
-                type="text"
-                id="registerUsuario"
-                value={registerForm.usuario}
-                onChange={(e) => setRegisterForm({...registerForm, usuario: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="registerEmail" className="block mb-2 font-medium">Email:</label>
-              <input
-                type="email"
-                id="registerEmail"
-                value={registerForm.email}
-                onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="registerPassword" className="block mb-2 font-medium">Contraseña:</label>
-              <input
-                type="password"
-                id="registerPassword"
-                value={registerForm.contrasenia}
-                onChange={(e) => setRegisterForm({...registerForm, contrasenia: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="confirmPassword" className="block mb-2 font-medium">Confirmar Contraseña:</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={registerForm.confirmPassword}
-                onChange={(e) => setRegisterForm({...registerForm, confirmPassword: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-primary"
-                required
-              />
-            </div>
-            {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-accent-primary text-white py-3 rounded font-bold hover:bg-hover-highlight transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Cargando...' : 'Registrarse'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveForm('login')}
-              className="w-full bg-gray-500 text-white py-3 rounded font-bold hover:bg-gray-600 transition-colors mt-2"
-            >
-              <i className="fas fa-arrow-left mr-2"></i>Volver a Iniciar Sesión
-            </button>
-          </form>
-          <p className="text-center mt-4">
-            ¿Ya tienes cuenta?{' '}
-            <button 
-              onClick={() => setActiveForm('login')}
-              className="text-accent-primary hover:underline"
-            >
-              Inicia sesión aquí
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
+        //Sesión en localStorage para mantener login al recargar
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        // action.payload viene de rejectWithValue
+        state.error = action.payload || 'Error al iniciar sesión';
+      })
 
-export default AuthModal;
+
+      // REGISTER
+
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Error al registrarse';
+      });
+  },
+});
+
+export const { logout, loadSession } = authSlice.actions;
+export default authSlice.reducer;

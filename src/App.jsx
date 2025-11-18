@@ -17,6 +17,7 @@ import CategoriasPageAdmin from './pages/CategoriasPageAdmin';
 import ProductosPageAdmin from './pages/ProductosPageAdmin'; 
 import './App.css';
 import { NotifyProvider } from './context/NotifyContext';
+import { DiscountProvider } from './context/DiscountContext';
 
 const ProtectedRoute = ({ children, roles = [] }) => {
   const { isAuthenticated, user } = useAuth();
@@ -36,52 +37,55 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <NotifyProvider>
-          <div className="App">
-            <Navbar />
-            <main>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/catalog" element={<CatalogPage />} />
-                <Route path="/carrito" element={<CartPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
+            <DiscountProvider>   {0}
+              <div className="App">
+                <Navbar />
+                <main>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/catalog" element={<CatalogPage />} />
+                    <Route path="/carrito" element={<CartPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/producto/:productId" element={<ProductDetail />} />
 
-                <Route path="/producto/:productId" element={<ProductDetail />} />
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute roles={['VENDEDOR', 'ADMIN']}>
+                          <AdminPanel />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute roles={['VENDEDOR', 'ADMIN']}>
-                      <AdminPanel />
-                    </ProtectedRoute>
-                  }
-                />
+                    <Route
+                      path="/admin/categorias"
+                      element={
+                        <ProtectedRoute roles={['VENDEDOR', 'ADMIN']}>
+                          <CategoriasPageAdmin />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                <Route
-                  path="/admin/categorias"
-                  element={
-                    <ProtectedRoute roles={['VENDEDOR', 'ADMIN']}>
-                      <CategoriasPageAdmin />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/admin/productos"
-                  element={
-                    <ProtectedRoute roles={['VENDEDOR', 'ADMIN']}>
-                      <ProductosPageAdmin />
-                    </ProtectedRoute>
-                  }
-                />
-
-              </Routes>
-            </main>
-          </div>
+                    <Route
+                      path="/admin/productos"
+                      element={
+                        <ProtectedRoute roles={['VENDEDOR', 'ADMIN']}>
+                          <ProductosPageAdmin />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </Routes>
+                </main>
+              </div>
+            </DiscountProvider> {0}
           </NotifyProvider>
         </CartProvider>
       </AuthProvider>
     </Router>
   );
 }
+
+
 
 export default App;
