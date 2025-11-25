@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
-import { useAuth } from '../hooks/useAuth';
 import './HomePage.css';
+import { useSelector } from "react-redux";
+
 
 const HomePage = () => {
   const { products, loading: productsLoading, error: productsError } = useProducts();
@@ -12,7 +13,8 @@ const HomePage = () => {
     loading: cartLoading, 
     error: cartError 
   } = useCart();
-  const { user } = useAuth();
+const user = useSelector((state) => state.auth.user);
+
   
   const [notification, setNotification] = useState(null);
   const [addingToCart, setAddingToCart] = useState(null);

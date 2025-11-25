@@ -63,7 +63,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-//createSlice
+//createSlide
 //1. Nos evita escribir action types a mano (AUTH_LOGIN_SUCCESS, etc.)
 //2. Nos permite escribir "mutaciones" que en realidad son inmutables gracias a immer
 const authSlice = createSlice({
